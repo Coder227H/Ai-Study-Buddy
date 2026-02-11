@@ -12,3 +12,16 @@ def quiz_prompt(topic):
     Create 5 multiple-choice questions on '{topic}'.
     Provide answers at the end.
     """
+
+def pdf_explanation_prompt(text, mode):
+    return f"""
+    You are an AI study assistant.
+
+    Based on the following study material:
+    -------------------
+    {text[:12000]}
+    -------------------
+
+    Task: {mode}
+    Use clear explanations and bullet points.
+    """

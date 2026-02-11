@@ -5,6 +5,9 @@ load_dotenv()
 
 from ai_engine import generate_response
 from prompts import explanation_prompt, summary_prompt, quiz_prompt
+from pdf_utils import extract_text_from_pdf
+from prompts import pdf_explanation_prompt
+
 
 
 
@@ -26,11 +29,29 @@ level = st.sidebar.selectbox(
     ["Beginner", "Intermediate", "Exam-Ready"]
 )
 
-# 6️⃣ Generate button
+st.subheader("📄 Upload PDF Notes (Optional)")
+
+uploaded_pdf = st.file_uploader(
+    "Upload a PDF file",
+    type=["pdf"]
+)
+
 if st.button("Generate", type="primary"):
-    if not topic.strip():
-        st.warning("Please enter a topic")
-    else:
+    if uploaded_pdf:
+        with st.spinner("Reading PDF and thinking..."):
+            pdf_text = extract_text_from_pdf(uploaded_pdf)
+
+            if not pdf_text:
+                st.error("Could not extract text from PDF.")
+            else:
+                prompt = pdf_explanation_prompt(
+                    pdf_text,
+                    f"{mode} the content"
+                )
+                result = generate_response(prompt)
+                st.markdown(result)
+
+    elif topic.strip():
         with st.spinner("Thinking..."):
             if mode == "Explain":
                 prompt = explanation_prompt(topic, level)
@@ -39,9 +60,8 @@ if st.button("Generate", type="primary"):
             else:
                 prompt = quiz_prompt(topic)
 
-            try:
-                result = generate_response(prompt)
-                st.markdown(result)
-            except Exception as e:
-                st.error("Something went wrong while generating the response.")
-                st.exception(e)
+            result = generate_response(prompt)
+            st.markdown(result)
+
+    else:
+        st.warning("Please enter a topic or upload a PDF.")
