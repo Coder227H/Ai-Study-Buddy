@@ -1,3 +1,4 @@
-python-dotenv==1.2.1
-google-genai==1.62.0
-streamlit==1.54.0
+streamlit
+google-genai
+pypdf
+tenacity

@@ -1,10 +1,9 @@
+import io
 from pypdf import PdfReader
 
-def extract_text_from_pdf(uploaded_file):
-    reader = PdfReader(uploaded_file)
+def extract_text(uploaded_file):
+    pdf = PdfReader(io.BytesIO(uploaded_file.read()))
     text = ""
-
-    for page in reader.pages:
+    for page in pdf.pages:
         text += page.extract_text() or ""
-
-    return text.strip()
+    return text

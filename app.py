@@ -1,19 +1,19 @@
 import streamlit as st
-from dotenv import load_dotenv
-load_dotenv()
+
+api_key = st.secrets["GOOGLE_API_KEY"]
 
 from ai_engine import generate_response
 from prompts import explanation_prompt, summary_prompt, quiz_prompt, pdf_explanation_prompt
 from pdf_utils import extract_text_from_pdf
 
-# ─────────────────────────────────────────────
+
 # PAGE CONFIG
-# ─────────────────────────────────────────────
+
 st.set_page_config(page_title="AI Study Buddy", page_icon="🤖", layout="wide")
 
-# ─────────────────────────────────────────────
+
 # SESSION STATE INIT
-# ─────────────────────────────────────────────
+
 defaults = {
     "messages": [],
     "last_topic": None,
@@ -27,9 +27,9 @@ for key, val in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = val
 
-# ─────────────────────────────────────────────
+
 # SIDEBAR
-# ─────────────────────────────────────────────
+
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
 
@@ -53,6 +53,13 @@ with st.sidebar:
             else:
                 st.error("❌ Could not extract text from this PDF.")
 
+    
+    else:
+    
+        if st.session_state.last_pdf_text is not None:
+            st.session_state.last_pdf_text = None
+            st.session_state.last_pdf_name = None
+
     st.markdown("---")
     if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
@@ -64,32 +71,32 @@ with st.sidebar:
         st.session_state.uploader_version += 1
         st.rerun()
 
-# ─────────────────────────────────────────────
+
 # HEADER
-# ─────────────────────────────────────────────
+
 st.title("🤖 AI Study Buddy")
 st.caption("Your personal AI-powered learning assistant")
 st.divider()
 
-# ─────────────────────────────────────────────
+
 # INPUT
-# ─────────────────────────────────────────────
+
 input_col, btn_col = st.columns([5, 1], vertical_alignment="bottom")
 with input_col:
     topic = st.text_input("Enter a topic", placeholder="e.g., binary search, neural networks…", label_visibility="collapsed")
 with btn_col:
     generate_clicked = st.button("Generate ✨", type="primary", use_container_width=True, disabled=st.session_state.generating)
 
-# ─────────────────────────────────────────────
+
 # CHAT HISTORY DISPLAY
-# ─────────────────────────────────────────────
+
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ─────────────────────────────────────────────
+
 # HELPERS
-# ─────────────────────────────────────────────
+
 
 def detect_mode_override(text: str, default: str) -> str:
     t = text.lower()
@@ -140,9 +147,9 @@ def render_ai_response(response: str):
     st.session_state.messages.append({"role": "assistant", "content": response})
     return True
 
-# ─────────────────────────────────────────────
+
 # FREEZE REQUEST WHEN BUTTON CLICKED
-# ─────────────────────────────────────────────
+
 if generate_clicked and not st.session_state.generating:
     if not topic.strip() and not st.session_state.last_pdf_text:
         st.warning("⚠️ Please enter a topic or upload a PDF first.")
@@ -160,9 +167,9 @@ if generate_clicked and not st.session_state.generating:
     st.session_state.generating = True
     st.rerun()
 
-# ─────────────────────────────────────────────
+
 # PROCESS PENDING REQUEST SAFELY
-# ─────────────────────────────────────────────
+
 if st.session_state.generating and st.session_state.pending_prompt:
     user_display, mode, level = st.session_state.pending_prompt
 
@@ -180,7 +187,7 @@ if st.session_state.generating and st.session_state.pending_prompt:
                 response = call_ai(core_prompt)
                 success = render_ai_response(response)
 
-        # ❌ rollback if failed
+    
         if not success:
             st.session_state.messages.pop(user_index)
 
@@ -191,9 +198,9 @@ if st.session_state.generating and st.session_state.pending_prompt:
         if success:
             st.rerun()
 
-# ─────────────────────────────────────────────
+
 # FOLLOW-UP CHAT INPUT (ONLY QUEUES REQUEST)
-# ─────────────────────────────────────────────
+
 user_followup = st.chat_input(
     "Ask a follow-up question…",
     disabled=st.session_state.generating
