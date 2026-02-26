@@ -14,7 +14,7 @@ Your personal AI-powered learning assistant powered by Google Gemini. Quickly ge
 ## Prerequisites
 
 - Python 3.8 or higher
-- Google Genai API key
+- Google Genai API key (set as an environment variable)
 - Internet connection
 
 ## Installation
@@ -40,10 +40,17 @@ Your personal AI-powered learning assistant powered by Google Gemini. Quickly ge
    ```
 
 4. **Set up environment variables**
-   Create a `.env` file in the root directory:
+   The application reads `GOOGLE_API_KEY` directly from your environment. You can export it in your shell before running the app:
+   
+   ```bash
+   # Windows (PowerShell)
+   $env:GOOGLE_API_KEY="your_api_key_here"
+   
+   # macOS/Linux
+   export GOOGLE_API_KEY="your_api_key_here"
    ```
-   GOOGLE_API_KEY=your_api_key_here
-   ```
+   
+   Optionally, you may use a `.env` file with a library like `python-dotenv` if you prefer, but this project doesn't require it.
 
 ## Usage
 
@@ -85,7 +92,7 @@ Retry delays: 1s → 2s → 4s between attempts.
 ## Configuration
 
 ### Models & APIs
-- **Model**: `gemini-3-flash-preview` (Google Genai)
+- **Model**: `gemini-2.5-flash` (Google Genai)
 - **API Provider**: Google Generative AI
 
 ### Customization
@@ -95,7 +102,6 @@ Edit `prompts.py` to customize the prompt templates for different modes.
 
 - `streamlit==1.54.0` - Web application framework
 - `google-genai==1.62.0` - Google Generative AI API client
-- `python-dotenv==1.2.1` - Environment variable management
 
 ## Future Enhancements
 
@@ -115,8 +121,5 @@ Edit `prompts.py` to customize the prompt templates for different modes.
 - Wait a few minutes and try again
 - The service may be experiencing temporary overload
 
-**Missing API key error**
-- Verify `.env` file exists in the root directory
-- Check that `GOOGLE_API_KEY` is set correctly
 
  
