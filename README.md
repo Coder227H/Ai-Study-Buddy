@@ -75,7 +75,7 @@ ai-study-buddy2/
 ├── prompts.py          # Prompt templates for different modes
 ├── pdf_utils.py        # PDF text extraction utilities
 ├── requirements.txt    # Python dependencies
-└── README.md          # This file
+└── README.md           # This file
 ```
 
 ## Error Handling
